@@ -4,6 +4,8 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import secrets
 from datetime import datetime
 
+from arvore import ArvoreBinaria
+
 
 # =========================
 # CONFIGURAÇÃO
@@ -19,7 +21,14 @@ AZUL_ESCURO = "#1D4ED8"
 TEXTO = "#172033"
 TEXTO_SECUNDARIO = "#64748B"
 
+
+# =========================
+# ESTRUTURAS
+# =========================
+
 historico = []
+
+arvore = ArvoreBinaria()
 
 
 # =========================
@@ -88,6 +97,10 @@ def adicionar_historico(tipo, mensagem):
         "mensagem": mensagem,
         "data": data_hora
     })
+
+
+def adicionar_arvore(mensagem):
+    arvore.inserir(mensagem)
 
 
 # =========================
@@ -191,6 +204,8 @@ def tela_criptografar():
                 "Mensagem enviada",
                 texto
             )
+
+            adicionar_arvore(texto)
 
             messagebox.showinfo(
                 "Sucesso",
@@ -360,6 +375,8 @@ def tela_descriptografar():
                 mensagem_original
             )
 
+            adicionar_arvore(mensagem_original)
+
             messagebox.showinfo(
                 "Sucesso",
                 "Mensagem descriptografada com sucesso!"
@@ -480,6 +497,29 @@ def tela_historico():
 
 
 # =========================
+# ÁRVORE EM PÓS-ORDEM
+# =========================
+
+def mostrar_arvore_pos_ordem():
+
+    resultado = arvore.pos_ordem(arvore.raiz)
+
+    if not resultado:
+        messagebox.showinfo(
+            "Árvore Binária",
+            "Nenhuma mensagem foi adicionada à árvore."
+        )
+        return
+
+    texto = "\n\n".join(resultado)
+
+    messagebox.showinfo(
+        "Árvore Binária - Pós-Ordem",
+        texto
+    )
+
+
+# =========================
 # TELA PRINCIPAL
 # =========================
 
@@ -523,6 +563,17 @@ def tela_principal():
         "HISTÓRICO",
         tela_historico
     )
+
+    tk.Button(
+        janela,
+        text="Ver árvore em pós-ordem",
+        command=mostrar_arvore_pos_ordem,
+        font=("Arial", 10),
+        bg=FUNDO,
+        fg=AZUL,
+        relief="flat",
+        cursor="hand2"
+    ).pack(pady=25)
 
     tk.Label(
         janela,
