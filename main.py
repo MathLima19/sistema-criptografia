@@ -1,8 +1,11 @@
 import tkinter as tk
+from tkinter import messagebox, filedialog
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import secrets
 
 
 # =========================
-# CONFIGURAÇÃO DA JANELA
+# CONFIGURAÇÃO
 # =========================
 
 LARGURA = 540
@@ -14,7 +17,6 @@ AZUL = "#2563EB"
 AZUL_ESCURO = "#1D4ED8"
 TEXTO = "#172033"
 TEXTO_SECUNDARIO = "#64748B"
-BORDA = "#E2E8F0"
 
 
 # =========================
@@ -66,8 +68,17 @@ def criar_botao(texto, comando):
     return botao
 
 
+def gerar_chave(senha):
+    chave = senha.encode("utf-8")
+
+    if len(chave) < 32:
+        chave = chave.ljust(32, b"0")
+
+    return chave[:32]
+
+
 # =========================
-# TELAS
+# CRIPTOGRAFIA
 # =========================
 
 def tela_criptografar():
@@ -116,9 +127,71 @@ def tela_criptografar():
 
     chave.pack(pady=8)
 
+    def criptografar():
+
+        texto = mensagem.get("1.0", tk.END).strip()
+        senha = chave.get()
+
+        if not texto:
+            messagebox.showwarning(
+                "Atenção",
+                "Digite uma mensagem."
+            )
+            return
+
+        if not senha:
+            messagebox.showwarning(
+                "Atenção",
+                "Digite uma chave."
+            )
+            return
+
+        try:
+            chave_criptografia = gerar_chave(senha)
+
+            nonce = secrets.token_bytes(12)
+
+            aes = AESGCM(chave_criptografia)
+
+            mensagem_criptografada = aes.encrypt(
+                nonce,
+                texto.encode("utf-8"),
+                None
+            )
+
+            arquivo = filedialog.asksaveasfilename(
+                title="Salvar mensagem criptografada",
+                defaultextension=".enc",
+                filetypes=[
+                    ("Arquivo criptografado", "*.enc")
+                ]
+            )
+
+            if not arquivo:
+                return
+
+            with open(arquivo, "wb") as arquivo_saida:
+                arquivo_saida.write(nonce)
+                arquivo_saida.write(mensagem_criptografada)
+
+            messagebox.showinfo(
+                "Sucesso",
+                "Mensagem criptografada com sucesso!\n\n"
+                "O arquivo pode ser enviado para o outro diretor."
+            )
+
+            mensagem.delete("1.0", tk.END)
+            chave.delete(0, tk.END)
+
+        except Exception as erro:
+            messagebox.showerror(
+                "Erro",
+                f"Não foi possível criptografar a mensagem.\n\n{erro}"
+            )
+
     criar_botao(
         "CRIPTOGRAFAR",
-        lambda: print("Criptografar")
+        criptografar
     )
 
     tk.Button(
@@ -132,6 +205,10 @@ def tela_criptografar():
         cursor="hand2"
     ).pack(pady=30)
 
+
+# =========================
+# DESCRIPTOGRAFAR
+# =========================
 
 def tela_descriptografar():
     limpar_tela()
@@ -143,69 +220,7 @@ def tela_descriptografar():
 
     tk.Label(
         janela,
-        text="Arquivo criptografado",
-        font=("Arial", 11, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(anchor="w", padx=55)
-
-    arquivo = tk.Entry(
-        janela,
-        width=40,
-        font=("Arial", 11),
-        relief="solid",
-        bd=1
-    )
-
-    arquivo.pack(pady=(8, 25))
-
-    tk.Label(
-        janela,
-        text="Chave",
-        font=("Arial", 11, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(anchor="w", padx=55)
-
-    chave = tk.Entry(
-        janela,
-        width=40,
-        font=("Arial", 11),
-        show="*",
-        relief="solid",
-        bd=1
-    )
-
-    chave.pack(pady=8)
-
-    criar_botao(
-        "DESCRIPTOGRAFAR",
-        lambda: print("Descriptografar")
-    )
-
-    tk.Button(
-        janela,
-        text="← Voltar",
-        command=tela_principal,
-        font=("Arial", 11),
-        bg=FUNDO,
-        fg=AZUL,
-        relief="flat",
-        cursor="hand2"
-    ).pack(pady=30)
-
-
-def tela_historico():
-    limpar_tela()
-
-    criar_titulo(
-        "Histórico",
-        "Mensagens enviadas e recuperadas"
-    )
-
-    tk.Label(
-        janela,
-        text="O histórico das mensagens aparecerá aqui.",
+        text="A descriptografia será adicionada no próximo passo.",
         font=("Arial", 11),
         bg=FUNDO,
         fg=TEXTO_SECUNDARIO
@@ -222,6 +237,42 @@ def tela_historico():
         cursor="hand2"
     ).pack(pady=30)
 
+
+# =========================
+# HISTÓRICO
+# =========================
+
+def tela_historico():
+    limpar_tela()
+
+    criar_titulo(
+        "Histórico",
+        "Mensagens enviadas e recuperadas"
+    )
+
+    tk.Label(
+        janela,
+        text="O histórico será implementado posteriormente.",
+        font=("Arial", 11),
+        bg=FUNDO,
+        fg=TEXTO_SECUNDARIO
+    ).pack(pady=100)
+
+    tk.Button(
+        janela,
+        text="← Voltar",
+        command=tela_principal,
+        font=("Arial", 11),
+        bg=FUNDO,
+        fg=AZUL,
+        relief="flat",
+        cursor="hand2"
+    ).pack(pady=30)
+
+
+# =========================
+# TELA PRINCIPAL
+# =========================
 
 def tela_principal():
     limpar_tela()
@@ -274,7 +325,7 @@ def tela_principal():
 
 
 # =========================
-# JANELA PRINCIPAL
+# JANELA
 # =========================
 
 janela = tk.Tk()
