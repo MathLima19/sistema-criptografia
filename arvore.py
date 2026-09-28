@@ -19,19 +19,30 @@ class ArvoreBinaria:
 
     def _inserir(self, atual, novo_no):
         if novo_no.valor < atual.valor:
+
             if atual.esquerda is None:
                 atual.esquerda = novo_no
             else:
                 self._inserir(atual.esquerda, novo_no)
 
         else:
+
             if atual.direita is None:
                 atual.direita = novo_no
             else:
                 self._inserir(atual.direita, novo_no)
 
-    def pos_ordem(self, no):
+    def pos_ordem(self, no, resultado=None):
+
+        if resultado is None:
+            resultado = []
+
         if no is not None:
-            self.pos_ordem(no.esquerda)
-            self.pos_ordem(no.direita)
-            print(no.valor)
+
+            self.pos_ordem(no.esquerda, resultado)
+
+            self.pos_ordem(no.direita, resultado)
+
+            resultado.append(no.valor)
+
+        return resultado
