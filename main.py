@@ -2,340 +2,640 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import secrets
+import os
 from datetime import datetime
+from arvore import No, ArvoreBinaria
 
-from arvore import ArvoreBinaria
 
+# ==========================================================
+# CONFIGURAÇÕES VISUAIS
+# ==========================================================
 
-# =========================
-# CONFIGURAÇÃO
-# =========================
-
-LARGURA = 540
-ALTURA = 960
-
+LARGURA = 1280
+ALTURA = 720
 FUNDO = "#F4F7FB"
 BRANCO = "#FFFFFF"
 AZUL = "#2563EB"
 AZUL_ESCURO = "#1D4ED8"
+AZUL_CLARO = "#EFF6FF"
 TEXTO = "#172033"
 TEXTO_SECUNDARIO = "#64748B"
+BORDA = "#E2E8F0"
+VERDE = "#16A34A"
+VERMELHO = "#DC2626"
 
 
-# =========================
-# ESTRUTURAS
-# =========================
+# ==========================================================
+# CONFIGURAÇÃO DA SENHA
+# ==========================================================
 
-historico = []
+SENHA_CORRETA = "jesussalva"
+
+
+# ==========================================================
+# ÁRVORE
+# ==========================================================
 
 arvore = ArvoreBinaria()
+contador_mensagens = 0
 
 
-# =========================
-# FUNÇÕES
-# =========================
+# ==========================================================
+# JANELA PRINCIPAL
+# ==========================================================
+
+janela = tk.Tk()
+
+janela.title(
+    "Sistema de Criptografia"
+)
+
+janela.geometry(
+    f"{LARGURA}x{ALTURA}"
+)
+
+janela.resizable(
+    False,
+    False
+)
+
+janela.configure(
+    bg=FUNDO
+)
+
+
+# ==========================================================
+# LIMPAR TELA
+# ==========================================================
 
 def limpar_tela():
     for widget in janela.winfo_children():
         widget.destroy()
 
 
-def criar_titulo(titulo, subtitulo):
+# ==========================================================
+# TÍTULO
+# ==========================================================
+
+def criar_titulo(
+    titulo,
+    subtitulo=None
+):
     tk.Label(
         janela,
         text=titulo,
         font=("Arial", 25, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(pady=(50, 8))
-
-    tk.Label(
-        janela,
-        text=subtitulo,
-        font=("Arial", 11),
-        bg=FUNDO,
-        fg=TEXTO_SECUNDARIO
-    ).pack(pady=(0, 40))
-
-
-def criar_botao(texto, comando):
-    botao = tk.Button(
-        janela,
-        text=texto,
-        command=comando,
-        font=("Arial", 12, "bold"),
-        bg=AZUL,
-        fg=BRANCO,
-        activebackground=AZUL_ESCURO,
-        activeforeground=BRANCO,
-        relief="flat",
-        bd=0,
-        width=30,
-        height=3,
-        cursor="hand2"
+        fg=TEXTO,
+        bg=FUNDO
+    ).pack(
+        pady=(55, 8)
     )
 
-    botao.pack(pady=12)
+    if subtitulo:
+        tk.Label(
+            janela,
+            text=subtitulo,
+            font=("Arial", 11),
+            fg=TEXTO_SECUNDARIO,
+            bg=FUNDO
+        ).pack(
+            pady=(0, 30)
+        )
 
-    return botao
 
+# ==========================================================
+# BOTÃO ARREDONDADO
+# ==========================================================
+
+def criar_botao(
+    texto,
+    comando,
+    largura=360,
+    altura=58,
+    cor=AZUL
+):
+    canvas = tk.Canvas(
+        janela,
+        width=largura,
+        height=altura,
+        bg=FUNDO,
+        highlightthickness=0
+    )
+
+    raio = 18
+
+    # ------------------------------------------
+    # DESENHAR BOTÃO
+    # ------------------------------------------
+
+    canvas.create_arc(
+        0,
+        0,
+        raio * 2,
+        raio * 2,
+        start=90,
+        extent=90,
+        fill=cor,
+        outline=cor
+    )
+
+    canvas.create_arc(
+        largura - raio * 2,
+        0,
+        largura,
+        raio * 2,
+        start=0,
+        extent=90,
+        fill=cor,
+        outline=cor
+    )
+
+    canvas.create_arc(
+        0,
+        altura - raio * 2,
+        raio * 2,
+        altura,
+        start=180,
+        extent=90,
+        fill=cor,
+        outline=cor
+    )
+
+    canvas.create_arc(
+        largura - raio * 2,
+        altura - raio * 2,
+        largura,
+        altura,
+        start=270,
+        extent=90,
+        fill=cor,
+        outline=cor
+    )
+
+    canvas.create_rectangle(
+        raio,
+        0,
+        largura - raio,
+        altura,
+        fill=cor,
+        outline=cor
+    )
+
+    canvas.create_rectangle(
+        0,
+        raio,
+        largura,
+        altura - raio,
+        fill=cor,
+        outline=cor
+    )
+
+    # ------------------------------------------
+    # TEXTO
+    # ------------------------------------------
+
+    canvas.create_text(
+        largura / 2,
+        altura / 2,
+        text=texto,
+        fill=BRANCO,
+        font=("Arial", 11, "bold")
+    )
+
+    # ------------------------------------------
+    # CLIQUE
+    # ------------------------------------------
+
+    canvas.bind(
+        "<Button-1>",
+        lambda evento: comando()
+    )
+
+    # ------------------------------------------
+    # EFEITO AO PASSAR O MOUSE
+    # ------------------------------------------
+
+    def mouse_entrou(evento):
+        canvas.configure(
+            bg=FUNDO
+        )
+
+        canvas.delete("all")
+
+        canvas.create_arc(
+            0,
+            0,
+            raio * 2,
+            raio * 2,
+            start=90,
+            extent=90,
+            fill=AZUL_ESCURO,
+            outline=AZUL_ESCURO
+        )
+
+        canvas.create_arc(
+            largura - raio * 2,
+            0,
+            largura,
+            raio * 2,
+            start=0,
+            extent=90,
+            fill=AZUL_ESCURO,
+            outline=AZUL_ESCURO
+        )
+
+        canvas.create_arc(
+            0,
+            altura - raio * 2,
+            raio * 2,
+            altura,
+            start=180,
+            extent=90,
+            fill=AZUL_ESCURO,
+            outline=AZUL_ESCURO
+        )
+
+        canvas.create_arc(
+            largura - raio * 2,
+            altura - raio * 2,
+            largura,
+            altura,
+            start=270,
+            extent=90,
+            fill=AZUL_ESCURO,
+            outline=AZUL_ESCURO
+        )
+
+        canvas.create_rectangle(
+            raio,
+            0,
+            largura - raio,
+            altura,
+            fill=AZUL_ESCURO,
+            outline=AZUL_ESCURO
+        )
+
+        canvas.create_rectangle(
+            0,
+            raio,
+            largura,
+            altura - raio,
+            fill=AZUL_ESCURO,
+            outline=AZUL_ESCURO
+        )
+
+        canvas.create_text(
+            largura / 2,
+            altura / 2,
+            text=texto,
+            fill=BRANCO,
+            font=("Arial", 11, "bold")
+        )
+
+    def mouse_saiu(evento):
+        canvas.delete("all")
+
+        canvas.create_arc(
+            0,
+            0,
+            raio * 2,
+            raio * 2,
+            start=90,
+            extent=90,
+            fill=cor,
+            outline=cor
+        )
+
+        canvas.create_arc(
+            largura - raio * 2,
+            0,
+            largura,
+            raio * 2,
+            start=0,
+            extent=90,
+            fill=cor,
+            outline=cor
+        )
+
+        canvas.create_arc(
+            0,
+            altura - raio * 2,
+            raio * 2,
+            altura,
+            start=180,
+            extent=90,
+            fill=cor,
+            outline=cor
+        )
+
+        canvas.create_arc(
+            largura - raio * 2,
+            altura - raio * 2,
+            largura,
+            altura,
+            start=270,
+            extent=90,
+            fill=cor,
+            outline=cor
+        )
+
+        canvas.create_rectangle(
+            raio,
+            0,
+            largura - raio,
+            altura,
+            fill=cor,
+            outline=cor
+        )
+
+        canvas.create_rectangle(
+            0,
+            raio,
+            largura,
+            altura - raio,
+            fill=cor,
+            outline=cor
+        )
+
+        canvas.create_text(
+            largura / 2,
+            altura / 2,
+            text=texto,
+            fill=BRANCO,
+            font=("Arial", 11, "bold")
+        )
+
+    canvas.bind(
+        "<Enter>",
+        mouse_entrou
+    )
+
+    canvas.bind(
+        "<Leave>",
+        mouse_saiu
+    )
+
+    return canvas
+
+
+# ==========================================================
+# BOTÃO VOLTAR
+# ==========================================================
+
+def criar_botao_voltar(
+    comando
+):
+    tk.Button(
+        janela,
+        text="←  Voltar",
+        command=comando,
+        font=("Arial", 10),
+        fg=TEXTO_SECUNDARIO,
+        bg=FUNDO,
+        activebackground=FUNDO,
+        activeforeground=AZUL,
+        relief="flat",
+        bd=0,
+        cursor="hand2"
+    ).place(
+        x=25,
+        y=20
+    )
+
+
+# ==========================================================
+# GERAR CHAVE
+# ==========================================================
 
 def gerar_chave(senha):
-    chave = senha.encode("utf-8")
+    chave = senha.encode(
+        "utf-8"
+    )
 
     if len(chave) < 32:
-        chave = chave.ljust(32, b"0")
+        chave = chave.ljust(
+            32,
+            b"0"
+        )
 
     return chave[:32]
 
 
-def adicionar_historico(tipo, mensagem):
-    data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+# ==========================================================
+# REGISTRAR HISTÓRICO
+# ==========================================================
 
-    historico.append({
-        "tipo": tipo,
-        "mensagem": mensagem,
-        "data": data_hora
-    })
+def registrar_historico(
+    arquivo,
+    status,
+    mensagem
+):
+    global contador_mensagens
+
+    contador_mensagens += 1
+
+    data_hora = datetime.now().strftime(
+        "%d/%m/%Y %H:%M:%S"
+    )
+
+    novo_no = No(
+        contador_mensagens,
+        arquivo,
+        data_hora,
+        status,
+        mensagem
+    )
+
+    arvore.inserir(
+        novo_no
+    )
 
 
-def adicionar_arvore(mensagem):
-    arvore.inserir(mensagem)
+# ==========================================================
+# TELA PRINCIPAL
+# ==========================================================
+
+def tela_principal():
+    limpar_tela()
+
+    # ------------------------------------------
+    # ÍCONE
+    # ------------------------------------------
+
+    tk.Label(
+        janela,
+        text="🔐",
+        font=("Arial", 42),
+        bg=FUNDO,
+        fg=AZUL
+    ).pack(
+        pady=(95, 10)
+    )
+
+    # ------------------------------------------
+    # TÍTULO
+    # ------------------------------------------
+
+    tk.Label(
+        janela,
+        text="Criptografia",
+        font=("Arial", 28, "bold"),
+        fg=TEXTO,
+        bg=FUNDO
+    ).pack()
+
+    tk.Label(
+        janela,
+        text="Comunicação segura de mensagens",
+        font=("Arial", 11),
+        fg=TEXTO_SECUNDARIO,
+        bg=FUNDO
+    ).pack(
+        pady=(8, 55)
+    )
+
+    # ------------------------------------------
+    # BOTÕES
+    # ------------------------------------------
+
+    criar_botao(
+        "CRIPTOGRAFAR",
+        tela_criptografar
+    ).pack(
+        pady=10
+    )
+
+    criar_botao(
+        "DESCRIPTOGRAFAR",
+        tela_descriptografar
+    ).pack(
+        pady=10
+    )
+
+    criar_botao(
+        "HISTÓRICO",
+        tela_historico
+    ).pack(
+        pady=10
+    )
+
+    # ------------------------------------------
+    # RODAPÉ
+    # ------------------------------------------
+
+    tk.Label(
+        janela,
+        text="Sistema de mensagens seguras",
+        font=("Arial", 9),
+        fg=TEXTO_SECUNDARIO,
+        bg=FUNDO
+    ).pack(
+        side="bottom",
+        pady=35
+    )
 
 
-# =========================
-# CRIPTOGRAFAR
-# =========================
+# ==========================================================
+# TELA CRIPTOGRAFAR
+# ==========================================================
 
 def tela_criptografar():
+
     limpar_tela()
+
+    criar_botao_voltar(
+        tela_principal
+    )
 
     criar_titulo(
         "Criptografar",
-        "Proteja sua mensagem com uma chave"
+        "Proteja sua mensagem com a chave do sistema"
     )
+
+    # ------------------------------------------
+    # MENSAGEM
+    # ------------------------------------------
 
     tk.Label(
         janela,
         text="Mensagem",
         font=("Arial", 11, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(anchor="w", padx=55)
-
-    mensagem = tk.Text(
-        janela,
-        width=45,
-        height=10,
-        font=("Arial", 11),
-        relief="solid",
-        bd=1
+        fg=TEXTO,
+        bg=FUNDO
+    ).pack(
+        anchor="w",
+        padx=45
     )
 
-    mensagem.pack(pady=(8, 25))
+    campo_mensagem = tk.Text(
+        janela,
+        width=48,
+        height=12,
+        font=("Arial", 11),
+        bg=BRANCO,
+        fg=TEXTO,
+        relief="solid",
+        bd=1,
+        highlightthickness=1,
+        highlightbackground=BORDA,
+        highlightcolor=AZUL,
+        wrap="word"
+    )
+
+    campo_mensagem.pack(
+        padx=45,
+        pady=(8, 25)
+    )
+
+    # ------------------------------------------
+    # CHAVE
+    # ------------------------------------------
 
     tk.Label(
         janela,
         text="Chave",
         font=("Arial", 11, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(anchor="w", padx=55)
-
-    chave = tk.Entry(
-        janela,
-        width=40,
-        font=("Arial", 11),
-        show="*",
-        relief="solid",
-        bd=1
+        fg=TEXTO,
+        bg=FUNDO
+    ).pack(
+        anchor="w",
+        padx=45
     )
 
-    chave.pack(pady=8)
+    campo_chave = tk.Entry(
+        janela,
+        font=("Arial", 11),
+        bg=BRANCO,
+        fg=TEXTO,
+        relief="solid",
+        bd=1,
+        show="*"
+    )
+
+    campo_chave.pack(
+        fill="x",
+        padx=45,
+        pady=(8, 40),
+        ipady=10
+    )
+
+    # ------------------------------------------
+    # CRIPTOGRAFAR
+    # ------------------------------------------
 
     def criptografar():
 
-        texto = mensagem.get("1.0", tk.END).strip()
-        senha = chave.get()
+        mensagem = campo_mensagem.get(
+            "1.0",
+            tk.END
+        ).strip()
 
-        if not texto:
+        senha = campo_chave.get()
+
+        if not mensagem:
             messagebox.showwarning(
                 "Atenção",
                 "Digite uma mensagem."
-            )
-            return
-
-        if not senha:
-            messagebox.showwarning(
-                "Atenção",
-                "Digite uma chave."
-            )
-            return
-
-        try:
-            chave_criptografia = gerar_chave(senha)
-
-            nonce = secrets.token_bytes(12)
-
-            aes = AESGCM(chave_criptografia)
-
-            mensagem_criptografada = aes.encrypt(
-                nonce,
-                texto.encode("utf-8"),
-                None
-            )
-
-            arquivo = filedialog.asksaveasfilename(
-                title="Salvar mensagem criptografada",
-                defaultextension=".enc",
-                filetypes=[
-                    ("Arquivo criptografado", "*.enc")
-                ]
-            )
-
-            if not arquivo:
-                return
-
-            with open(arquivo, "wb") as arquivo_saida:
-                arquivo_saida.write(nonce)
-                arquivo_saida.write(mensagem_criptografada)
-
-            adicionar_historico(
-                "Mensagem enviada",
-                texto
-            )
-
-            adicionar_arvore(texto)
-
-            messagebox.showinfo(
-                "Sucesso",
-                "Mensagem criptografada com sucesso!"
-            )
-
-            mensagem.delete("1.0", tk.END)
-            chave.delete(0, tk.END)
-
-        except Exception as erro:
-            messagebox.showerror(
-                "Erro",
-                f"Não foi possível criptografar a mensagem.\n\n{erro}"
-            )
-
-    criar_botao(
-        "CRIPTOGRAFAR",
-        criptografar
-    )
-
-    tk.Button(
-        janela,
-        text="← Voltar",
-        command=tela_principal,
-        font=("Arial", 11),
-        bg=FUNDO,
-        fg=AZUL,
-        relief="flat",
-        cursor="hand2"
-    ).pack(pady=30)
-
-
-# =========================
-# DESCRIPTOGRAFAR
-# =========================
-
-def tela_descriptografar():
-    limpar_tela()
-
-    criar_titulo(
-        "Descriptografar",
-        "Recupere uma mensagem protegida"
-    )
-
-    tk.Label(
-        janela,
-        text="Arquivo criptografado",
-        font=("Arial", 11, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(anchor="w", padx=55)
-
-    arquivo_selecionado = tk.StringVar()
-
-    entrada_arquivo = tk.Entry(
-        janela,
-        textvariable=arquivo_selecionado,
-        width=40,
-        font=("Arial", 11),
-        relief="solid",
-        bd=1,
-        state="readonly"
-    )
-
-    entrada_arquivo.pack(pady=(8, 10))
-
-    def selecionar_arquivo():
-
-        arquivo = filedialog.askopenfilename(
-            title="Selecionar arquivo criptografado",
-            filetypes=[
-                ("Arquivo criptografado", "*.enc")
-            ]
-        )
-
-        if arquivo:
-            arquivo_selecionado.set(arquivo)
-
-    tk.Button(
-        janela,
-        text="SELECIONAR ARQUIVO",
-        command=selecionar_arquivo,
-        font=("Arial", 10, "bold"),
-        bg=BRANCO,
-        fg=AZUL,
-        relief="solid",
-        bd=1,
-        cursor="hand2"
-    ).pack(pady=(0, 30))
-
-    tk.Label(
-        janela,
-        text="Chave",
-        font=("Arial", 11, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack(anchor="w", padx=55)
-
-    chave = tk.Entry(
-        janela,
-        width=40,
-        font=("Arial", 11),
-        show="*",
-        relief="solid",
-        bd=1
-    )
-
-    chave.pack(pady=8)
-
-    resultado = tk.Text(
-        janela,
-        width=45,
-        height=10,
-        font=("Arial", 11),
-        relief="solid",
-        bd=1,
-        state="disabled"
-    )
-
-    resultado.pack(pady=(25, 15))
-
-    def descriptografar():
-
-        arquivo = arquivo_selecionado.get()
-        senha = chave.get()
-
-        if not arquivo:
-            messagebox.showwarning(
-                "Atenção",
-                "Selecione um arquivo criptografado."
             )
             return
 
@@ -346,257 +646,567 @@ def tela_descriptografar():
             )
             return
 
+        # A única senha aceita pelo sistema
+        if senha != SENHA_CORRETA:
+            messagebox.showerror(
+                "Chave inválida",
+                "A chave informada está incorreta."
+            )
+            return
+
         try:
-            with open(arquivo, "rb") as arquivo_entrada:
-                dados = arquivo_entrada.read()
 
-            nonce = dados[:12]
-            mensagem_criptografada = dados[12:]
+            chave = gerar_chave(
+                SENHA_CORRETA
+            )
 
-            chave_criptografia = gerar_chave(senha)
+            aes = AESGCM(
+                chave
+            )
 
-            aes = AESGCM(chave_criptografia)
+            nonce = secrets.token_bytes(
+                12
+            )
 
-            mensagem_original = aes.decrypt(
+            dados = aes.encrypt(
                 nonce,
-                mensagem_criptografada,
+                mensagem.encode(
+                    "utf-8"
+                ),
                 None
             )
 
-            mensagem_original = mensagem_original.decode("utf-8")
-
-            resultado.config(state="normal")
-            resultado.delete("1.0", tk.END)
-            resultado.insert("1.0", mensagem_original)
-            resultado.config(state="disabled")
-
-            adicionar_historico(
-                "Mensagem recuperada",
-                mensagem_original
+            caminho = filedialog.asksaveasfilename(
+                title="Salvar mensagem criptografada",
+                defaultextension=".enc",
+                filetypes=[
+                    (
+                        "Arquivo criptografado",
+                        "*.enc"
+                    )
+                ]
             )
 
-            adicionar_arvore(mensagem_original)
+            if not caminho:
+                return
+
+            with open(
+                caminho,
+                "wb"
+            ) as arquivo:
+
+                arquivo.write(
+                    nonce
+                )
+
+                arquivo.write(
+                    dados
+                )
+
+            registrar_historico(
+                caminho,
+                "Enviada",
+                mensagem
+            )
 
             messagebox.showinfo(
-                "Sucesso",
-                "Mensagem descriptografada com sucesso!"
+                "Concluído",
+                "Mensagem criptografada com sucesso."
             )
 
-        except Exception:
+            tela_principal()
+
+        except Exception as erro:
+
             messagebox.showerror(
                 "Erro",
-                "Não foi possível descriptografar.\n\n"
-                "Verifique se o arquivo e a chave estão corretos."
+                f"Não foi possível criptografar:\n{erro}"
             )
 
     criar_botao(
-        "DESCRIPTOGRAFAR",
-        descriptografar
+        "Criptografar mensagem",
+        criptografar
+    ).pack(
+        pady=10
     )
 
-    tk.Button(
+
+# ==========================================================
+# TELA DESCRIPTOGRAFAR
+# ==========================================================
+
+def tela_descriptografar():
+
+    limpar_tela()
+
+    criar_botao_voltar(
+        tela_principal
+    )
+
+    criar_titulo(
+        "Descriptografar",
+        "Recupere uma mensagem usando a chave do sistema"
+    )
+
+    # ------------------------------------------
+    # ARQUIVO
+    # ------------------------------------------
+
+    tk.Label(
         janela,
-        text="← Voltar",
-        command=tela_principal,
+        text="Arquivo criptografado",
+        font=("Arial", 11, "bold"),
+        fg=TEXTO,
+        bg=FUNDO
+    ).pack(
+        anchor="w",
+        padx=45
+    )
+
+    arquivo_selecionado = tk.StringVar()
+
+    campo_arquivo = tk.Entry(
+        janela,
+        textvariable=arquivo_selecionado,
+        font=("Arial", 10),
+        bg=BRANCO,
+        fg=TEXTO_SECUNDARIO,
+        relief="solid",
+        bd=1,
+        state="readonly"
+    )
+
+    campo_arquivo.pack(
+        fill="x",
+        padx=45,
+        pady=(8, 10),
+        ipady=10
+    )
+
+    def selecionar_arquivo():
+
+        caminho = filedialog.askopenfilename(
+            title="Selecionar arquivo",
+            filetypes=[
+                (
+                    "Arquivo criptografado",
+                    "*.enc"
+                )
+            ]
+        )
+
+        if caminho:
+            arquivo_selecionado.set(
+                caminho
+            )
+
+    criar_botao(
+        "Selecionar arquivo",
+        selecionar_arquivo,
+        largura=250,
+        altura=50,
+        cor=AZUL
+    ).pack(
+        pady=(0, 35)
+    )
+
+    # ------------------------------------------
+    # CHAVE
+    # ------------------------------------------
+
+    tk.Label(
+        janela,
+        text="Chave",
+        font=("Arial", 11, "bold"),
+        fg=TEXTO,
+        bg=FUNDO
+    ).pack(
+        anchor="w",
+        padx=45
+    )
+
+    campo_chave = tk.Entry(
+        janela,
         font=("Arial", 11),
-        bg=FUNDO,
-        fg=AZUL,
-        relief="flat",
-        cursor="hand2"
-    ).pack(pady=20)
+        bg=BRANCO,
+        fg=TEXTO,
+        relief="solid",
+        bd=1,
+        show="*"
+    )
+
+    campo_chave.pack(
+        fill="x",
+        padx=45,
+        pady=(8, 40),
+        ipady=10
+    )
+
+    # ------------------------------------------
+    # DESCRIPTOGRAFAR
+    # ------------------------------------------
+
+    def descriptografar():
+
+        caminho = arquivo_selecionado.get()
+        senha = campo_chave.get()
+
+        if not caminho:
+            messagebox.showwarning(
+                "Atenção",
+                "Selecione um arquivo."
+            )
+            return
+
+        if not senha:
+            messagebox.showwarning(
+                "Atenção",
+                "Digite a chave."
+            )
+            return
+
+        # A única senha aceita pelo sistema
+        if senha != SENHA_CORRETA:
+            messagebox.showerror(
+                "Chave inválida",
+                "A chave informada está incorreta."
+            )
+            return
+
+        try:
+
+            with open(
+                caminho,
+                "rb"
+            ) as arquivo:
+
+                dados = arquivo.read()
+
+            nonce = dados[:12]
+
+            dados_criptografados = dados[12:]
+
+            # Usa sempre a senha oficial do sistema
+            chave = gerar_chave(
+                SENHA_CORRETA
+            )
+
+            aes = AESGCM(
+                chave
+            )
+
+            mensagem = aes.decrypt(
+                nonce,
+                dados_criptografados,
+                None
+            ).decode(
+                "utf-8"
+            )
+
+            registrar_historico(
+                caminho,
+                "Recuperada",
+                mensagem
+            )
+
+            tela_mensagem_recuperada(
+                mensagem,
+                caminho
+            )
+
+        except Exception:
+
+            messagebox.showerror(
+                "Erro",
+                "Não foi possível descriptografar.\n\n"
+                "Verifique a chave e o arquivo."
+            )
+
+    criar_botao(
+        "Descriptografar mensagem",
+        descriptografar
+    ).pack(
+        pady=10
+    )
 
 
-# =========================
-# HISTÓRICO
-# =========================
+# ==========================================================
+# TELA DA MENSAGEM
+# ==========================================================
+
+def tela_mensagem_recuperada(
+    mensagem,
+    caminho
+):
+
+    limpar_tela()
+
+    criar_botao_voltar(
+        tela_principal
+    )
+
+    criar_titulo(
+        "Mensagem recuperada",
+        "A mensagem foi descriptografada"
+    )
+
+    campo_mensagem = tk.Text(
+        janela,
+        width=48,
+        height=15,
+        font=("Arial", 11),
+        bg=BRANCO,
+        fg=TEXTO,
+        relief="solid",
+        bd=1,
+        highlightthickness=1,
+        highlightbackground=BORDA,
+        wrap="word"
+    )
+
+    campo_mensagem.pack(
+        padx=45,
+        pady=10
+    )
+
+    campo_mensagem.insert(
+        tk.END,
+        mensagem
+    )
+
+    campo_mensagem.config(
+        state="disabled"
+    )
+
+    def marcar_lida():
+
+        registrar_historico(
+            caminho,
+            "Lida",
+            mensagem
+        )
+
+        messagebox.showinfo(
+            "Histórico",
+            "Mensagem registrada como lida."
+        )
+
+        tela_principal()
+
+    criar_botao(
+        "Marcar como lida",
+        marcar_lida
+    ).pack(
+        pady=25
+    )
+
+
+# ==========================================================
+# TELA HISTÓRICO
+# ==========================================================
 
 def tela_historico():
+
     limpar_tela()
+
+    criar_botao_voltar(
+        tela_principal
+    )
 
     criar_titulo(
         "Histórico",
-        "Mensagens enviadas e recuperadas"
+        "Mensagens registradas no sistema"
     )
 
-    if not historico:
+    # ------------------------------------------
+    # ÁREA DO HISTÓRICO
+    # ------------------------------------------
+
+    mensagens = arvore.pos_ordem()
+
+    if not mensagens:
 
         tk.Label(
             janela,
             text="Nenhuma mensagem registrada.",
             font=("Arial", 11),
-            bg=FUNDO,
-            fg=TEXTO_SECUNDARIO
-        ).pack(pady=100)
+            fg=TEXTO_SECUNDARIO,
+            bg=FUNDO
+        ).pack(
+            pady=100
+        )
 
     else:
 
-        quadro = tk.Frame(
+        # --------------------------------------
+        # FRAME COM SCROLL
+        # --------------------------------------
+
+        container = tk.Frame(
             janela,
-            bg=BRANCO
+            bg=FUNDO
         )
 
-        quadro.pack(
-            padx=35,
-            pady=10,
+        container.pack(
+            fill="both",
+            expand=True,
+            padx=30,
+            pady=10
+        )
+
+        canvas = tk.Canvas(
+            container,
+            bg=FUNDO,
+            highlightthickness=0
+        )
+
+        barra = tk.Scrollbar(
+            container,
+            orient="vertical",
+            command=canvas.yview
+        )
+
+        frame_historico = tk.Frame(
+            canvas,
+            bg=FUNDO
+        )
+
+        frame_historico.bind(
+            "<Configure>",
+            lambda evento:
+            canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window(
+            (0, 0),
+            window=frame_historico,
+            anchor="nw",
+            width=450
+        )
+
+        canvas.configure(
+            yscrollcommand=barra.set
+        )
+
+        canvas.pack(
+            side="left",
             fill="both",
             expand=True
         )
 
-        texto_historico = tk.Text(
-            quadro,
-            font=("Arial", 10),
-            bg=BRANCO,
-            fg=TEXTO,
-            relief="flat",
-            wrap="word"
+        barra.pack(
+            side="right",
+            fill="y"
         )
 
-        texto_historico.pack(
-            padx=15,
-            pady=15,
-            fill="both",
-            expand=True
-        )
+        # --------------------------------------
+        # MENSAGENS
+        # --------------------------------------
 
-        for item in historico:
+        for mensagem in mensagens:
 
-            texto_historico.insert(
-                tk.END,
-                f"{item['tipo']}\n"
+            nome_arquivo = os.path.basename(
+                mensagem.arquivo
             )
 
-            texto_historico.insert(
-                tk.END,
-                f"Data: {item['data']}\n\n"
+            card = tk.Frame(
+                frame_historico,
+                bg=BRANCO,
+                highlightbackground=BORDA,
+                highlightthickness=1
             )
 
-            texto_historico.insert(
-                tk.END,
-                f"{item['mensagem']}\n"
+            card.pack(
+                fill="x",
+                pady=8
             )
 
-            texto_historico.insert(
-                tk.END,
-                "\n"
-                + "-" * 45
-                + "\n\n"
+            # ----------------------------------
+            # STATUS
+            # ----------------------------------
+
+            tk.Label(
+                card,
+                text=mensagem.status.upper(),
+                font=("Arial", 9, "bold"),
+                fg=AZUL,
+                bg=BRANCO
+            ).pack(
+                anchor="w",
+                padx=18,
+                pady=(15, 3)
             )
 
-        texto_historico.config(state="disabled")
+            # ----------------------------------
+            # DATA
+            # ----------------------------------
 
-    tk.Button(
-        janela,
-        text="← Voltar",
-        command=tela_principal,
-        font=("Arial", 11),
-        bg=FUNDO,
-        fg=AZUL,
-        relief="flat",
-        cursor="hand2"
-    ).pack(pady=25)
+            tk.Label(
+                card,
+                text=mensagem.data_hora,
+                font=("Arial", 9),
+                fg=TEXTO_SECUNDARIO,
+                bg=BRANCO
+            ).pack(
+                anchor="w",
+                padx=18
+            )
 
+            # ----------------------------------
+            # MENSAGEM
+            # ----------------------------------
 
-# =========================
-# ÁRVORE EM PÓS-ORDEM
-# =========================
+            tk.Label(
+                card,
+                text=mensagem.mensagem,
+                font=("Arial", 11),
+                fg=TEXTO,
+                bg=BRANCO,
+                justify="left",
+                anchor="w",
+                wraplength=410
+            ).pack(
+                fill="x",
+                padx=18,
+                pady=(12, 8)
+            )
 
-def mostrar_arvore_pos_ordem():
+            # ----------------------------------
+            # ARQUIVO
+            # ----------------------------------
 
-    resultado = arvore.pos_ordem(arvore.raiz)
+            tk.Label(
+                card,
+                text=f"Arquivo: {nome_arquivo}",
+                font=("Arial", 8),
+                fg=TEXTO_SECUNDARIO,
+                bg=BRANCO
+            ).pack(
+                anchor="w",
+                padx=18,
+                pady=(0, 15)
+            )
 
-    if not resultado:
-        messagebox.showinfo(
-            "Árvore Binária",
-            "Nenhuma mensagem foi adicionada à árvore."
-        )
-        return
-
-    texto = "\n\n".join(resultado)
-
-    messagebox.showinfo(
-        "Árvore Binária - Pós-Ordem",
-        texto
-    )
-
-
-# =========================
-# TELA PRINCIPAL
-# =========================
-
-def tela_principal():
-    limpar_tela()
+    # ------------------------------------------
+    # INFORMAÇÃO DA ÁRVORE
+    # ------------------------------------------
 
     tk.Label(
         janela,
-        text="🔐",
-        font=("Arial", 45),
-        bg=FUNDO
-    ).pack(pady=(80, 15))
-
-    tk.Label(
-        janela,
-        text="Criptografia",
-        font=("Arial", 28, "bold"),
-        bg=FUNDO,
-        fg=TEXTO
-    ).pack()
-
-    tk.Label(
-        janela,
-        text="Sistema de troca segura de mensagens",
-        font=("Arial", 11),
-        bg=FUNDO,
-        fg=TEXTO_SECUNDARIO
-    ).pack(pady=(8, 70))
-
-    criar_botao(
-        "CRIPTOGRAFAR",
-        tela_criptografar
-    )
-
-    criar_botao(
-        "DESCRIPTOGRAFAR",
-        tela_descriptografar
-    )
-
-    criar_botao(
-        "HISTÓRICO",
-        tela_historico
-    )
-
-    tk.Button(
-        janela,
-        text="Ver árvore em pós-ordem",
-        command=mostrar_arvore_pos_ordem,
-        font=("Arial", 10),
-        bg=FUNDO,
-        fg=AZUL,
-        relief="flat",
-        cursor="hand2"
-    ).pack(pady=25)
-
-    tk.Label(
-        janela,
-        text="Mensagens protegidas por criptografia simétrica",
+        text="Árvore binária • percurso em pós-ordem",
         font=("Arial", 9),
-        bg=FUNDO,
-        fg=TEXTO_SECUNDARIO
-    ).pack(side="bottom", pady=35)
+        fg=TEXTO_SECUNDARIO,
+        bg=FUNDO
+    ).pack(
+        pady=15
+    )
 
 
-# =========================
-# JANELA PRINCIPAL
-# =========================
-
-janela = tk.Tk()
-
-janela.title("Criptografia")
-
-janela.geometry(f"{LARGURA}x{ALTURA}")
-
-janela.resizable(False, False)
-
-janela.configure(bg=FUNDO)
+# ==========================================================
+# INICIAR PROGRAMA
+# ==========================================================
 
 tela_principal()
 
