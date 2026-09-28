@@ -78,7 +78,7 @@ def gerar_chave(senha):
 
 
 # =========================
-# CRIPTOGRAFIA
+# CRIPTOGRAFAR
 # =========================
 
 def tela_criptografar():
@@ -176,8 +176,7 @@ def tela_criptografar():
 
             messagebox.showinfo(
                 "Sucesso",
-                "Mensagem criptografada com sucesso!\n\n"
-                "O arquivo pode ser enviado para o outro diretor."
+                "Mensagem criptografada com sucesso!"
             )
 
             mensagem.delete("1.0", tk.END)
@@ -220,11 +219,140 @@ def tela_descriptografar():
 
     tk.Label(
         janela,
-        text="A descriptografia será adicionada no próximo passo.",
-        font=("Arial", 11),
+        text="Arquivo criptografado",
+        font=("Arial", 11, "bold"),
         bg=FUNDO,
-        fg=TEXTO_SECUNDARIO
-    ).pack(pady=100)
+        fg=TEXTO
+    ).pack(anchor="w", padx=55)
+
+    arquivo_selecionado = tk.StringVar()
+
+    entrada_arquivo = tk.Entry(
+        janela,
+        textvariable=arquivo_selecionado,
+        width=40,
+        font=("Arial", 11),
+        relief="solid",
+        bd=1,
+        state="readonly"
+    )
+
+    entrada_arquivo.pack(pady=(8, 10))
+
+    def selecionar_arquivo():
+
+        arquivo = filedialog.askopenfilename(
+            title="Selecionar arquivo criptografado",
+            filetypes=[
+                ("Arquivo criptografado", "*.enc")
+            ]
+        )
+
+        if arquivo:
+            arquivo_selecionado.set(arquivo)
+
+    tk.Button(
+        janela,
+        text="SELECIONAR ARQUIVO",
+        command=selecionar_arquivo,
+        font=("Arial", 10, "bold"),
+        bg=BRANCO,
+        fg=AZUL,
+        relief="solid",
+        bd=1,
+        cursor="hand2"
+    ).pack(pady=(0, 30))
+
+    tk.Label(
+        janela,
+        text="Chave",
+        font=("Arial", 11, "bold"),
+        bg=FUNDO,
+        fg=TEXTO
+    ).pack(anchor="w", padx=55)
+
+    chave = tk.Entry(
+        janela,
+        width=40,
+        font=("Arial", 11),
+        show="*",
+        relief="solid",
+        bd=1
+    )
+
+    chave.pack(pady=8)
+
+    resultado = tk.Text(
+        janela,
+        width=45,
+        height=10,
+        font=("Arial", 11),
+        relief="solid",
+        bd=1,
+        state="disabled"
+    )
+
+    resultado.pack(pady=(25, 15))
+
+    def descriptografar():
+
+        arquivo = arquivo_selecionado.get()
+        senha = chave.get()
+
+        if not arquivo:
+            messagebox.showwarning(
+                "Atenção",
+                "Selecione um arquivo criptografado."
+            )
+            return
+
+        if not senha:
+            messagebox.showwarning(
+                "Atenção",
+                "Digite a chave."
+            )
+            return
+
+        try:
+            with open(arquivo, "rb") as arquivo_entrada:
+                dados = arquivo_entrada.read()
+
+            nonce = dados[:12]
+            mensagem_criptografada = dados[12:]
+
+            chave_criptografia = gerar_chave(senha)
+
+            aes = AESGCM(chave_criptografia)
+
+            mensagem_original = aes.decrypt(
+                nonce,
+                mensagem_criptografada,
+                None
+            )
+
+            mensagem_original = mensagem_original.decode("utf-8")
+
+            resultado.config(state="normal")
+            resultado.delete("1.0", tk.END)
+            resultado.insert("1.0", mensagem_original)
+            resultado.config(state="disabled")
+
+            messagebox.showinfo(
+                "Sucesso",
+                "Mensagem descriptografada com sucesso!"
+            )
+
+        except Exception:
+            messagebox.showerror(
+                "Erro",
+                "Não foi possível descriptografar.\n\n"
+                "Verifique se o arquivo e a chave estão corretos."
+            )
+
+    criar_botao(
+        "DESCRIPTOGRAFAR",
+        descriptografar
+    )
 
     tk.Button(
         janela,
@@ -235,7 +363,7 @@ def tela_descriptografar():
         fg=AZUL,
         relief="flat",
         cursor="hand2"
-    ).pack(pady=30)
+    ).pack(pady=20)
 
 
 # =========================
@@ -325,7 +453,7 @@ def tela_principal():
 
 
 # =========================
-# JANELA
+# JANELA PRINCIPAL
 # =========================
 
 janela = tk.Tk()
