@@ -1,0 +1,40 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36">
+  <diagram id="xgcTwUGTFSkBXIlC5B8c" name="Página-1">
+    <mxGraphModel dx="1133" dy="624" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-6" edge="1" parent="1" source="m9YsJfLaR5K0-SC89CQs-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;" target="m9YsJfLaR5K0-SC89CQs-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-7" edge="1" parent="1" source="m9YsJfLaR5K0-SC89CQs-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="m9YsJfLaR5K0-SC89CQs-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="&lt;h2&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;MENSAGEM 3&amp;nbsp;&lt;/font&gt;&lt;/h2&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="330" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="&lt;h3&gt;MENSAGEM 1&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="130" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-8" edge="1" parent="1" source="m9YsJfLaR5K0-SC89CQs-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="m9YsJfLaR5K0-SC89CQs-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="&lt;h3&gt;MENSAGEM 5&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="530" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-9" edge="1" parent="1" source="m9YsJfLaR5K0-SC89CQs-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="m9YsJfLaR5K0-SC89CQs-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="&lt;h3&gt;MENSAGEM 4&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="470" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="&lt;h3&gt;MENSAGEM 2&amp;nbsp;&lt;/h3&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="430" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="m9YsJfLaR5K0-SC89CQs-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;  PERCURSO PÓS-ORDEM&amp;nbsp;&lt;/font&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;br&gt;&amp;nbsp;Mensagem 1 → Mensagem 2 → Mensagem 4&amp;nbsp;&lt;br&gt;&amp;nbsp;→ Mensagem 5 → Mensagem 3&amp;nbsp;&lt;br&gt;&lt;br&gt;&amp;nbsp;Esquerda → Direita → Raiz  &lt;/font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="210" width="471" x="168" y="700" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
