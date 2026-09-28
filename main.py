@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import secrets
+from datetime import datetime
 
 
 # =========================
@@ -17,6 +18,8 @@ AZUL = "#2563EB"
 AZUL_ESCURO = "#1D4ED8"
 TEXTO = "#172033"
 TEXTO_SECUNDARIO = "#64748B"
+
+historico = []
 
 
 # =========================
@@ -75,6 +78,16 @@ def gerar_chave(senha):
         chave = chave.ljust(32, b"0")
 
     return chave[:32]
+
+
+def adicionar_historico(tipo, mensagem):
+    data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    historico.append({
+        "tipo": tipo,
+        "mensagem": mensagem,
+        "data": data_hora
+    })
 
 
 # =========================
@@ -173,6 +186,11 @@ def tela_criptografar():
             with open(arquivo, "wb") as arquivo_saida:
                 arquivo_saida.write(nonce)
                 arquivo_saida.write(mensagem_criptografada)
+
+            adicionar_historico(
+                "Mensagem enviada",
+                texto
+            )
 
             messagebox.showinfo(
                 "Sucesso",
@@ -337,6 +355,11 @@ def tela_descriptografar():
             resultado.insert("1.0", mensagem_original)
             resultado.config(state="disabled")
 
+            adicionar_historico(
+                "Mensagem recuperada",
+                mensagem_original
+            )
+
             messagebox.showinfo(
                 "Sucesso",
                 "Mensagem descriptografada com sucesso!"
@@ -378,13 +401,71 @@ def tela_historico():
         "Mensagens enviadas e recuperadas"
     )
 
-    tk.Label(
-        janela,
-        text="O histórico será implementado posteriormente.",
-        font=("Arial", 11),
-        bg=FUNDO,
-        fg=TEXTO_SECUNDARIO
-    ).pack(pady=100)
+    if not historico:
+
+        tk.Label(
+            janela,
+            text="Nenhuma mensagem registrada.",
+            font=("Arial", 11),
+            bg=FUNDO,
+            fg=TEXTO_SECUNDARIO
+        ).pack(pady=100)
+
+    else:
+
+        quadro = tk.Frame(
+            janela,
+            bg=BRANCO
+        )
+
+        quadro.pack(
+            padx=35,
+            pady=10,
+            fill="both",
+            expand=True
+        )
+
+        texto_historico = tk.Text(
+            quadro,
+            font=("Arial", 10),
+            bg=BRANCO,
+            fg=TEXTO,
+            relief="flat",
+            wrap="word"
+        )
+
+        texto_historico.pack(
+            padx=15,
+            pady=15,
+            fill="both",
+            expand=True
+        )
+
+        for item in historico:
+
+            texto_historico.insert(
+                tk.END,
+                f"{item['tipo']}\n"
+            )
+
+            texto_historico.insert(
+                tk.END,
+                f"Data: {item['data']}\n\n"
+            )
+
+            texto_historico.insert(
+                tk.END,
+                f"{item['mensagem']}\n"
+            )
+
+            texto_historico.insert(
+                tk.END,
+                "\n"
+                + "-" * 45
+                + "\n\n"
+            )
+
+        texto_historico.config(state="disabled")
 
     tk.Button(
         janela,
@@ -395,7 +476,7 @@ def tela_historico():
         fg=AZUL,
         relief="flat",
         cursor="hand2"
-    ).pack(pady=30)
+    ).pack(pady=25)
 
 
 # =========================
