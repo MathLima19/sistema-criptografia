@@ -3,9 +3,9 @@
 Projeto acadêmico desenvolvido para permitir a troca segura de mensagens entre diretores de diferentes cidades.
 
 Desenvolvido por:
-Carlos Eduardo Lima
-Jhonata Costa Ramos
-João Pedro Quadros
+Carlos Eduardo Lima,
+Jhonata Costa Ramos,
+João Pedro Quadros,
 Matheus Pereira de Lima
 
 ## Objetivo
