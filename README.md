@@ -2,11 +2,17 @@
 
 Projeto acadêmico desenvolvido para permitir a troca segura de mensagens entre diretores de diferentes cidades.
 
+Desenvolvido por:
+Carlos Eduardo Lima
+Jhonata Costa Ramos
+João Pedro Quadros
+Matheus Pereira de Lima
+
 ## Objetivo
 
 O sistema permite que uma mensagem seja criptografada por um diretor, salva em um arquivo protegido e transportada por meio de um dispositivo USB.
 
-O segundo diretor pode importar o arquivo, informar a chave correta e recuperar a mensagem original.
+O segundo diretor pode importar o arquivo, informar a chave correta (jesussalva) e recuperar a mensagem original.
 
 ## Funcionamento
 
