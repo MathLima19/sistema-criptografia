@@ -1,11 +1,39 @@
+import sys
+import subprocess
+
+# ==========================================================
+# INSTALAÇÃO AUTOMÁTICA DA BIBLIOTECA
+# ==========================================================
+
+try:
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+except ImportError:
+    print("Biblioteca 'cryptography' não encontrada.")
+    print("Instalando automaticamente...")
+
+    subprocess.check_call([
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "cryptography"
+    ])
+
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+
+# ==========================================================
+# IMPORTAÇÕES
+# ==========================================================
+
 import tkinter as tk
 from tkinter import messagebox, filedialog
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import secrets
 import os
 from datetime import datetime
-from arvore import No, ArvoreBinaria
 
+from arvore import No, ArvoreBinaria
 
 # ==========================================================
 # CONFIGURAÇÕES VISUAIS
